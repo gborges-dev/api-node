@@ -12,9 +12,9 @@ export class RequiresUsers {
 
     async create(dto) {
         const userId = randomUUID();
-        const { username, date, email, password } = dto;
+        const { username, datanascimento, email, password } = dto;
 
-        await sql` insert into users (id, username, date, email, password) VALUES (${userId}, ${username}, ${date}, ${email}, ${password})`;
+        await sql` insert into users (id, username, datanascimento, email, password) VALUES (${userId}, ${username}, ${date}, ${email}, ${password})`;
     };
 
     update(id, dto) {

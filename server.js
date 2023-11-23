@@ -13,11 +13,11 @@ server.register(fastifyCors, {
 const database = new RequiresUsers;
 
 server.post('/signin/create', async (resquest, reply) => {
-    const { username, date, email, password } = resquest.body;
+    const { username, datanascimento, email, password } = resquest.body;
 
     await database.create({
         username,
-        date,
+        datanascimento,
         email,
         password
     });
