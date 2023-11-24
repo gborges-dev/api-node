@@ -2,6 +2,12 @@ import { randomUUID } from 'node:crypto'
 import { sql } from './db.js';
 
 export class RequiresUsers {
+    async readAll() {
+        const res = await sql` select * from users`;
+
+        return res;
+    };
+
     async readLogin(dto) {
         const { email, password } = dto;
 
@@ -14,7 +20,7 @@ export class RequiresUsers {
         const userId = randomUUID();
         const { username, datanascimento, email, password } = dto;
 
-        await sql` insert into users (id, username, datanascimento, email, password) VALUES (${userId}, ${username}, ${date}, ${email}, ${password})`;
+        await sql` insert into users (id, username, datanascimento, email, password) VALUES (${userId}, ${username}, ${datanascimento}, ${email}, ${password})`;
     };
 
     update(id, dto) {

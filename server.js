@@ -40,6 +40,16 @@ server.post('/login/acesso', async (request, reply) => {
     }
 });
 
+server.get('/users/recoverAll', async (request, reply) => {
+    const respSql = await database.readAll();
+
+    if (respSql.length) {
+        reply.status(200).send({ Content: respSql, success: true });
+    } else {
+        reply.status(401).send({ success: false, message: 'Nenhum usuário cadastrado!' });
+    }
+});
+
 server.listen({
     port: 3333
 });
