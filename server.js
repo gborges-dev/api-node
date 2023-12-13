@@ -3,6 +3,7 @@ import fastifyCors from "fastify-cors";
 import { RequiresUsers } from "./requires-users.js";
 import { RequiresLocations } from "./require-locations.js";
 import { RequiresFaq } from "./require-faq.js";
+import { RequiresCV } from "./require-curriculum.js";
 
 const server = fastify();
 
@@ -15,6 +16,7 @@ server.register(fastifyCors, {
 const dbUser = new RequiresUsers;
 const dbLocation = new RequiresLocations;
 const dbFaq = new RequiresFaq;
+const dbCV = new RequiresCV;
 
 /* ######### INÍCIO - CHAMADAS PARA A ENTIDADE USER ################### */
 server.post('/signin/create', async (resquest, reply) => {
@@ -199,6 +201,95 @@ server.put('/faq/edit', async (request, reply) => {
 });
 
 /* ######### FIM - CHAMADAS PARA A ENTIDADE FAQ ################### */
+
+/* ######### INÍCIO - CHAMADAS PARA A ENTIDADE CURRICULUM ################### */
+
+server.post('/curriculum/create', async (resquest, reply) => {
+    const { nome, nacionalidade, estado_civil, data_nascimento, endereco, num_endereco, cep, telefone, email, objetivo, formacao, experiencias, at_complementares, idiomas, ref_pessoal } = resquest.body;
+
+    await dbCV.create({
+        nome,
+        nacionalidade,
+        estado_civil,
+        data_nascimento,
+        endereco,
+        num_endereco,
+        cep,
+        telefone,
+        email,
+        objetivo,
+        formacao,
+        experiencias,
+        at_complementares,
+        idiomas,
+        ref_pessoal
+    });
+
+    return reply.status(201).send();
+});
+
+server.get('/curriculum/recoverAll', async (request, reply) => {
+    const respSql = await dbCV.readAll();
+
+    if (respSql.length) {
+        reply.status(200).send({ Content: respSql, success: true });
+    } else {
+        reply.status(401).send({ success: false, message: 'Nenhum cv cadastrado!' });
+    }
+});
+
+server.get('/curriculum/readById/:id', async (request, reply) => {
+    const curriculumId = request.params.id;
+    const respSql = await dbCV.readById(curriculumId);
+
+    if (respSql.length) {
+        reply.status(200).send({ Content: respSql, success: true });
+    } else {
+        reply.status(401).send({ success: false, message: 'CV não cadastrado!' });
+    }
+});
+
+server.put('/curriculum/edit', async (request, reply) => {
+    try {
+        const { id, nome, nacionalidade, estado_civil, data_nascimento, endereco, num_endereco, cep, telefone, email, objetivo, formacao, experiencias, at_complementares, idiomas, ref_pessoal } = request.body;
+
+        await dbCV.update({
+            id,
+            nome,
+            nacionalidade,
+            estado_civil,
+            data_nascimento,
+            endereco,
+            num_endereco,
+            cep,
+            telefone,
+            email,
+            objetivo,
+            formacao,
+            experiencias,
+            at_complementares,
+            idiomas,
+            ref_pessoal
+        });
+
+        reply.status(200).send({ success: true, message: 'CV atualizado com sucesso' });
+    } catch (error) {
+        reply.status(500).send({ success: false, message: 'Erro ao atualizar o cv' });
+    }
+});
+
+server.delete('/curriculum/remove/:id', async (request, reply) => {
+    const curriculumId = request.params.id;
+    
+    try {
+        await dbCV.delete(curriculumId);
+        reply.status(200).send({ success: true, message: 'CV removido com sucesso' });
+    } catch (err) {
+        reply.status(500).send({ success: false, message: 'Erro ao remover o cv' });
+    }
+});
+
+/* ######### FIM - CHAMADAS PARA A ENTIDADE CURRICULUM ################### */
 server.listen({
     port: 3333
 });
